@@ -17,6 +17,9 @@ class CLIENT_API AClientPC : public APlayerController
 public:
 	AClientPC();
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
 	class ClientSocket* Socket;
 

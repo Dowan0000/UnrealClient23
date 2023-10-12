@@ -42,6 +42,9 @@ public:
 	// Connect to Server
 	bool Connect(const char* IP, const int Port);
 
+	bool StartListen();
+	void StopListen();
+
 private:
 	FRunnableThread*		Thread;
 	bool					bRunThread;

@@ -24,8 +24,17 @@ bool ClientSocket::Init()
 
 uint32 ClientSocket::Run()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ClientSocket::Run()"));
-	return uint32();
+	while (true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ClientSocket::Run()"));
+		FPlatformProcess::Sleep(0.1f);
+
+		// Recv
+		
+	}
+	
+
+	return 0;
 }
 
 void ClientSocket::Stop()
@@ -70,4 +79,24 @@ bool ClientSocket::Connect(const char* IP, const int Port)
 	}
 
 	return true;
+}
+
+bool ClientSocket::StartListen()
+{
+	if (Thread) return false;
+	
+	Thread = FRunnableThread::Create(this, TEXT("ClientSocket"));
+	return Thread != nullptr;
+}
+
+void ClientSocket::StopListen()
+{
+	if (Thread)
+	{
+		Stop();
+		Thread->WaitForCompletion();
+		Thread->Kill();
+		delete Thread;
+		Thread = nullptr;
+	}
 }

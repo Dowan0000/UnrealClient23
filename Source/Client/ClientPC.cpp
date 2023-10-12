@@ -13,3 +13,8 @@ AClientPC::AClientPC()
 		UE_LOG(LogTemp, Warning, TEXT("Connect Success!"));
 	}
 }
+
+void AClientPC::BeginPlay()
+{
+	if (Socket) Socket->StartListen();
+}
