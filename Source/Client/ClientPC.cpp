@@ -8,7 +8,7 @@ AClientPC::AClientPC()
 {
 	Socket = ClientSocket::GetSocket();
 	Socket->InitSocket();
-	if (Socket->Connect("127.0.0.1", 9000))
+	if (Socket->Connect("127.0.0.1", 8765))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Connect Success!"));
 	}
