@@ -2,7 +2,7 @@
 
 
 #include "ClientSocket.h"
-
+#include <sstream>
 
 
 ClientSocket::ClientSocket()
@@ -99,4 +99,14 @@ void ClientSocket::StopListen()
 		delete Thread;
 		Thread = nullptr;
 	}
+}
+
+void ClientSocket::SendPlayerInfo(PlayerInfo pInfo)
+{
+	std::stringstream sendStream;
+
+	sendStream << EPacketType::PT_PlayerInfo << std::endl;
+	sendStream << pInfo;
+
+	// send
 }

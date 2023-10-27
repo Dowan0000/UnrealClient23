@@ -20,7 +20,13 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+protected:
+	void SendPlayerInfo();
+
 private:
 	class ClientSocket* Socket;
 
+	class AClientCharacter* Character;
+
+	FTimerHandle PlayerInfoHandle;
 };
