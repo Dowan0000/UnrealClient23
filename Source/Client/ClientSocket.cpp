@@ -108,5 +108,6 @@ void ClientSocket::SendPlayerInfo(PlayerInfo pInfo)
 	sendStream << EPacketType::PT_PlayerInfo << std::endl;
 	sendStream << pInfo;
 
-	// send
+	if (-1 == send(Socket, sendStream.str().c_str(), sendStream.str().length(), 0))
+		return;
 }
