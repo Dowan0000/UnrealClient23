@@ -10,6 +10,7 @@ AClientPC::AClientPC()
 {
 	Socket = ClientSocket::GetSocket();
 	Socket->InitSocket();
+	Socket->SetPlayerController(this);
 	if (Socket->Connect("127.0.0.1", 8765))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Connect Success!"));
@@ -35,6 +36,9 @@ void AClientPC::SendPlayerInfo()
 
 	PlayerInfo pInfo;
 
+	pInfo.PlayerID = 1;
+	PlayerID = 1;
+
 	pInfo.PositionX = Position.X;
 	pInfo.PositionY = Position.Y;
 	pInfo.PositionZ = Position.Z;
@@ -48,4 +52,23 @@ void AClientPC::SendPlayerInfo()
 	pInfo.VelocityZ = Velocity.Z;
 
 	Socket->SendPlayerInfo(pInfo);
+}
+
+void AClientPC::RecvPlayerInfo(PlayerInfo* pInfo)
+{
+	// 수정 필요
+	AClientPC* ClientPC = nullptr;
+	for (auto& OtherCharacter : OtherCharacters)
+	{
+		ClientPC = Cast<AClientPC>(OtherCharacter->GetController());
+		if (ClientPC->PlayerID == pInfo->PlayerID)
+			break;
+	}
+
+	FVector Position = { pInfo->PositionX, pInfo->PositionY, pInfo->PositionZ };
+	FRotator Rotation = { pInfo->RotationPitch, pInfo->RotationYaw, pInfo->RotationRoll };
+	FVector Velocity = { pInfo->VelocityX, pInfo->VelocityY, pInfo->VelocityZ };
+	ClientPC->Character->SetActorLocation(Position);
+	ClientPC->Character->SetActorRotation(Rotation);
+	
 }

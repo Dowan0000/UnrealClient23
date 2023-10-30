@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <WinSock2.h>
+#include <ws2tcpip.h>
 #pragma comment(lib, "ws2_32.lib")
 
 #include "Windows/PostWindowsApi.h"
@@ -16,6 +17,17 @@
 
 #include "HAL/Runnable.h"
 
+
+#define BUFSIZE 4096
+
+class AClientPC;
+
+
+struct PacketHeader
+{
+	uint16 size; // 패킷 크기
+	uint16 Packetid; // 프로토콜ID
+};
 
 // Packet Type
 enum EPacketType
@@ -29,7 +41,7 @@ enum EPacketType
 class PlayerInfo
 {
 public:
-	int32 	ID;
+	int32 	PlayerID;
 
 	float	PositionX;
 	float	PositionY;
@@ -45,7 +57,7 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& stream, PlayerInfo& info)
 	{
-		//stream << info.SessionId << endl;
+		stream << info.PlayerID << std::endl;
 		stream << info.PositionX << std::endl;
 		stream << info.PositionY << std::endl;
 		stream << info.PositionZ << std::endl;
@@ -59,6 +71,21 @@ public:
 		return stream;
 	}
 
+	friend std::istream& operator>>(std::istream& stream, PlayerInfo& info)
+	{
+		stream >> info.PlayerID;
+		stream >> info.PositionX;
+		stream >> info.PositionY;
+		stream >> info.PositionZ;
+		stream >> info.RotationPitch;
+		stream >> info.RotationYaw;
+		stream >> info.RotationRoll;
+		stream >> info.VelocityX;
+		stream >> info.VelocityY;
+		stream >> info.VelocityZ;
+
+		return stream;
+	}
 };
 
 
@@ -95,12 +122,19 @@ public:
 	void StopListen();
 
 public:
+	void SetPlayerController(AClientPC* pc) { ClientPC = pc; }
+
 	void SendPlayerInfo(PlayerInfo pInfo);
+	//void RecvPlayerInfo(char* recvBuffer);
+
 
 private:
 	FRunnableThread*		Thread;
 	bool					bRunThread;
 
+	char					recvBuffer[BUFSIZE];
 	SOCKET					Socket;
+
+	AClientPC*				ClientPC;
 
 };

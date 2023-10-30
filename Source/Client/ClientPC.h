@@ -6,6 +6,10 @@
 #include "GameFramework/PlayerController.h"
 #include "ClientPC.generated.h"
 
+
+class PlayerInfo;
+class AClientCharacter;
+
 /**
  * 
  */
@@ -23,10 +27,19 @@ protected:
 protected:
 	void SendPlayerInfo();
 
+public:
+	void RecvPlayerInfo(PlayerInfo* pInfo);
+	
 private:
-	class ClientSocket* Socket;
+	class ClientSocket*			Socket;
+	
+	FTimerHandle				PlayerInfoHandle;
 
-	class AClientCharacter* Character;
+	// Character Á¢¼Ó½Ã Add
+	TArray<AClientCharacter*>	OtherCharacters;
 
-	FTimerHandle PlayerInfoHandle;
+public:
+	AClientCharacter* Character;
+
+	uint16						PlayerID;
 };

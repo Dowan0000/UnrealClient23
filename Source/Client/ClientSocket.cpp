@@ -3,6 +3,7 @@
 
 #include "ClientSocket.h"
 #include <sstream>
+#include "ClientPC.h"
 
 
 ClientSocket::ClientSocket()
@@ -29,7 +30,28 @@ uint32 ClientSocket::Run()
 		UE_LOG(LogTemp, Warning, TEXT("ClientSocket::Run()"));
 		FPlatformProcess::Sleep(0.1f);
 
-		// Recv
+		int recvLen = recv(Socket, recvBuffer, BUFSIZE, 0);
+		
+		PacketHeader* header = (PacketHeader*)recvBuffer;
+
+		if (recvLen > 0)
+		{
+			switch (header->Packetid)
+			{
+			case::EPacketType::PT_PlayerInfo:
+				{
+					//RecvPlayerInfo(recvBuffer);
+					PlayerInfo* pInfo = new PlayerInfo();
+					memcpy(pInfo, recvBuffer + sizeof(PacketHeader), sizeof(PlayerInfo));
+
+					if (ClientPC == nullptr) return 0;
+					ClientPC->RecvPlayerInfo(pInfo);
+
+					delete pInfo;
+				}
+			}
+
+		}
 		
 	}
 	
@@ -70,7 +92,7 @@ bool ClientSocket::Connect(const char* IP, const int Port)
 	ZeroMemory(&ServerAddr, sizeof(ServerAddr));
 	ServerAddr.sin_family = AF_INET;
 	ServerAddr.sin_port = htons(Port);
-	ServerAddr.sin_addr.s_addr = inet_addr(IP);
+	inet_pton(AF_INET, IP, &ServerAddr.sin_addr);
 
 	if (SOCKET_ERROR == connect(Socket, (SOCKADDR*)&ServerAddr, sizeof(ServerAddr)))
 	{
@@ -105,9 +127,33 @@ void ClientSocket::SendPlayerInfo(PlayerInfo pInfo)
 {
 	std::stringstream sendStream;
 
-	sendStream << EPacketType::PT_PlayerInfo << std::endl;
+	PacketHeader* header = new PacketHeader();
+	header->size = sizeof(PacketHeader) + sizeof(PlayerInfo);
+	header->Packetid = EPacketType::PT_PlayerInfo;
+
+	sendStream << header << std::endl;
 	sendStream << pInfo;
 
 	if (-1 == send(Socket, sendStream.str().c_str(), sendStream.str().length(), 0))
-		return;
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SendPlayerInfo() Error!"));
+		delete header;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SendPlayerInfo() Success!"));
+		delete header;
+	}
 }
+
+//void ClientSocket::RecvPlayerInfo(char* recvBuffer)
+//{
+//	/*PlayerInfo* pInfo = new PlayerInfo();
+//	memcpy(pInfo, recvBuffer + sizeof(PacketHeader), sizeof(PlayerInfo));
+//
+//	if (ClientPC == nullptr) return;
+//	ClientPC->RecvPlayerInfo(pInfo);
+//	
+//
+//	delete pInfo;*/
+//}
