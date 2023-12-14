@@ -29,6 +29,7 @@ protected:
 
 public:
 	void RecvPlayerInfo(PlayerInfo* pInfo);
+	//void RecvJoin()
 	
 private:
 	class ClientSocket*			Socket;

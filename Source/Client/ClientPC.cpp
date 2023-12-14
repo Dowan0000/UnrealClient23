@@ -56,19 +56,30 @@ void AClientPC::SendPlayerInfo()
 
 void AClientPC::RecvPlayerInfo(PlayerInfo* pInfo)
 {
+	UE_LOG(LogTemp, Warning, TEXT("RecvPlayerInfo 22222!"));
+
 	// 수정 필요
 	AClientPC* ClientPC = nullptr;
 	for (auto& OtherCharacter : OtherCharacters)
 	{
 		ClientPC = Cast<AClientPC>(OtherCharacter->GetController());
+		if (OtherCharacter->GetController() == UGameplayStatics::GetPlayerController(GetWorld(), 0))
+			continue;
+
 		if (ClientPC->PlayerID == pInfo->PlayerID)
-			break;
+		{
+			FVector Position = { pInfo->PositionX, pInfo->PositionY, pInfo->PositionZ };
+			FRotator Rotation = { pInfo->RotationPitch, pInfo->RotationYaw, pInfo->RotationRoll };
+			FVector Velocity = { pInfo->VelocityX, pInfo->VelocityY, pInfo->VelocityZ };
+			ClientPC->Character->SetActorLocation(Position);
+			ClientPC->Character->SetActorRotation(Rotation);
+		}
 	}
 
-	FVector Position = { pInfo->PositionX, pInfo->PositionY, pInfo->PositionZ };
+	/*FVector Position = { pInfo->PositionX, pInfo->PositionY, pInfo->PositionZ };
 	FRotator Rotation = { pInfo->RotationPitch, pInfo->RotationYaw, pInfo->RotationRoll };
 	FVector Velocity = { pInfo->VelocityX, pInfo->VelocityY, pInfo->VelocityZ };
 	ClientPC->Character->SetActorLocation(Position);
-	ClientPC->Character->SetActorRotation(Rotation);
+	ClientPC->Character->SetActorRotation(Rotation);*/
 	
 }

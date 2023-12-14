@@ -33,6 +33,7 @@ struct PacketHeader
 enum EPacketType
 {
 	PT_None,
+	PT_Join,
 	PT_PlayerInfo,
 
 };

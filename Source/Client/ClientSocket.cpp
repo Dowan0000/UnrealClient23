@@ -31,6 +31,7 @@ uint32 ClientSocket::Run()
 		FPlatformProcess::Sleep(0.1f);
 
 		int recvLen = recv(Socket, recvBuffer, BUFSIZE, 0);
+		UE_LOG(LogTemp, Warning, TEXT("RecvPlayerInfo 00000!"));
 		
 		PacketHeader* header = (PacketHeader*)recvBuffer;
 
@@ -38,8 +39,22 @@ uint32 ClientSocket::Run()
 		{
 			switch (header->Packetid)
 			{
+			case::EPacketType::PT_Join:
+				//PlayerInfo* pInfo = new PlayerInfo();
+				//memcpy(pInfo, recvBuffer + sizeof(PacketHeader), sizeof(PlayerInfo));
+				//if (ClientPC == nullptr) return 0;
+
+				//ClientPC->RecvJoin(recvBuffer);
+				
+				// 플레이어 접속시 작업중 ... 
+
+
 			case::EPacketType::PT_PlayerInfo:
 				{
+					// 수정 - 여기로 안들어옴
+
+					UE_LOG(LogTemp, Warning, TEXT("RecvPlayerInfo 11111!"));
+
 					//RecvPlayerInfo(recvBuffer);
 					PlayerInfo* pInfo = new PlayerInfo();
 					memcpy(pInfo, recvBuffer + sizeof(PacketHeader), sizeof(PlayerInfo));
